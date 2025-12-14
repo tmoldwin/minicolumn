@@ -209,126 +209,97 @@ for i, source_type in enumerate(ordered_cell_types):
 print("\n=== CREATING VISUALIZATIONS ===")
 sns.set_style("whitegrid")
 
+# Import LogNorm for log scale
+from matplotlib.colors import LogNorm
+
 # Single figure with all symmetry analyses: 3 rows x 4 columns
 # Row 1: Null hypothesis (independent connections)
 # Row 2: Real data
 # Row 3: P-values
+# Column order: No-Connection, Forward-Only, Reverse-Only, Symmetric
 fig = plt.figure(figsize=(40, 30))
 gs = fig.add_gridspec(3, 4, hspace=0.3, wspace=0.3)
 
+# Helper function to create log-scaled heatmap
+def create_log_heatmap(data, mask, ax, title, xlabel, ylabel, vmin_offset=1e-6):
+    # Apply log scale: log10(data + small_offset) to handle zeros
+    data_log = np.log10(data + vmin_offset)
+    # Find min and max for colorbar (excluding masked values)
+    valid_data = data[~mask]
+    if len(valid_data) > 0 and valid_data.max() > 0:
+        vmin_log = np.log10(valid_data[valid_data > 0].min() + vmin_offset)
+        vmax_log = np.log10(valid_data.max() + vmin_offset)
+    else:
+        vmin_log = -6
+        vmax_log = 0
+    
+    sns.heatmap(data_log, annot=True, fmt='.2f', cmap='YlOrRd', 
+                xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
+                mask=mask, cbar_kws={'label': 'log10(Fraction)'}, ax=ax,
+                linewidths=0.5, linecolor='gray', vmin=vmin_log, vmax=vmax_log)
+    ax.set_title(title, fontsize=12, fontweight='bold', pad=10)
+    ax.set_xlabel(xlabel, fontsize=10)
+    ax.set_ylabel(ylabel, fontsize=10)
+    ax.tick_params(axis='x', rotation=45, labelsize=7)
+    ax.tick_params(axis='y', rotation=0, labelsize=7)
+
 # Row 1: Null Hypothesis
-# Forward-Only (Null)
+# Column 0: No-Connection (Null)
 ax1 = fig.add_subplot(gs[0, 0])
-mask1 = forward_only_null_ordered == 0
-sns.heatmap(forward_only_null_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask1, cbar_kws={'label': 'Fraction'}, ax=ax1,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax1.set_title('Forward-Only (Null)\n(A->B, not B->A)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax1.set_xlabel('Target Cell Type', fontsize=10)
-ax1.set_ylabel('Source Cell Type', fontsize=10)
-ax1.tick_params(axis='x', rotation=45, labelsize=7)
-ax1.tick_params(axis='y', rotation=0, labelsize=7)
+mask1 = no_connection_null_ordered == 0
+create_log_heatmap(no_connection_null_ordered, mask1, ax1,
+                   'No-Connection (Null)\n(Neither A->B nor B->A)',
+                   'Target Cell Type', 'Source Cell Type')
 
-# Reverse-Only (Null)
+# Column 1: Forward-Only (Null)
 ax2 = fig.add_subplot(gs[0, 1])
-mask2 = reverse_only_null_ordered == 0
-sns.heatmap(reverse_only_null_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask2, cbar_kws={'label': 'Fraction'}, ax=ax2,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax2.set_title('Reverse-Only (Null)\n(B->A, not A->B)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax2.set_xlabel('Target Cell Type', fontsize=10)
-ax2.set_ylabel('Source Cell Type', fontsize=10)
-ax2.tick_params(axis='x', rotation=45, labelsize=7)
-ax2.tick_params(axis='y', rotation=0, labelsize=7)
+mask2 = forward_only_null_ordered == 0
+create_log_heatmap(forward_only_null_ordered, mask2, ax2,
+                   'Forward-Only (Null)\n(A->B, not B->A)',
+                   'Target Cell Type', 'Source Cell Type')
 
-# Symmetric (Null)
+# Column 2: Reverse-Only (Null)
 ax3 = fig.add_subplot(gs[0, 2])
-mask3 = symmetric_null_ordered == 0
-sns.heatmap(symmetric_null_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask3, cbar_kws={'label': 'Fraction'}, ax=ax3,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax3.set_title('Symmetric (Null)\n(Both A->B and B->A)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax3.set_xlabel('Target Cell Type', fontsize=10)
-ax3.set_ylabel('Source Cell Type', fontsize=10)
-ax3.tick_params(axis='x', rotation=45, labelsize=7)
-ax3.tick_params(axis='y', rotation=0, labelsize=7)
+mask3 = reverse_only_null_ordered == 0
+create_log_heatmap(reverse_only_null_ordered, mask3, ax3,
+                   'Reverse-Only (Null)\n(B->A, not A->B)',
+                   'Target Cell Type', 'Source Cell Type')
 
-# No-Connection (Null)
+# Column 3: Symmetric (Null)
 ax4 = fig.add_subplot(gs[0, 3])
-mask4 = no_connection_null_ordered == 0
-sns.heatmap(no_connection_null_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask4, cbar_kws={'label': 'Fraction'}, ax=ax4,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax4.set_title('No-Connection (Null)\n(Neither A->B nor B->A)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax4.set_xlabel('Target Cell Type', fontsize=10)
-ax4.set_ylabel('Source Cell Type', fontsize=10)
-ax4.tick_params(axis='x', rotation=45, labelsize=7)
-ax4.tick_params(axis='y', rotation=0, labelsize=7)
+mask4 = symmetric_null_ordered == 0
+create_log_heatmap(symmetric_null_ordered, mask4, ax4,
+                   'Symmetric (Null)\n(Both A->B and B->A)',
+                   'Target Cell Type', 'Source Cell Type')
 
 # Row 2: Real Data
-# Forward-Only (Real)
+# Column 0: No-Connection (Real)
 ax5 = fig.add_subplot(gs[1, 0])
-mask5 = forward_only_fraction_ordered == 0
-sns.heatmap(forward_only_fraction_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask5, cbar_kws={'label': 'Fraction'}, ax=ax5,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax5.set_title('Forward-Only (Real)\n(A->B, not B->A)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax5.set_xlabel('Target Cell Type', fontsize=10)
-ax5.set_ylabel('Source Cell Type', fontsize=10)
-ax5.tick_params(axis='x', rotation=45, labelsize=7)
-ax5.tick_params(axis='y', rotation=0, labelsize=7)
+mask5 = no_connection_fraction_ordered == 0
+create_log_heatmap(no_connection_fraction_ordered, mask5, ax5,
+                   'No-Connection (Real)\n(Neither A->B nor B->A)',
+                   'Target Cell Type', 'Source Cell Type')
 
-# Reverse-Only (Real)
+# Column 1: Forward-Only (Real)
 ax6 = fig.add_subplot(gs[1, 1])
-mask6 = reverse_only_fraction_ordered == 0
-sns.heatmap(reverse_only_fraction_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask6, cbar_kws={'label': 'Fraction'}, ax=ax6,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax6.set_title('Reverse-Only (Real)\n(B->A, not A->B)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax6.set_xlabel('Target Cell Type', fontsize=10)
-ax6.set_ylabel('Source Cell Type', fontsize=10)
-ax6.tick_params(axis='x', rotation=45, labelsize=7)
-ax6.tick_params(axis='y', rotation=0, labelsize=7)
+mask6 = forward_only_fraction_ordered == 0
+create_log_heatmap(forward_only_fraction_ordered, mask6, ax6,
+                   'Forward-Only (Real)\n(A->B, not B->A)',
+                   'Target Cell Type', 'Source Cell Type')
 
-# Symmetric (Real)
+# Column 2: Reverse-Only (Real)
 ax7 = fig.add_subplot(gs[1, 2])
-mask7 = symmetric_fraction_ordered == 0
-sns.heatmap(symmetric_fraction_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask7, cbar_kws={'label': 'Fraction'}, ax=ax7,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax7.set_title('Symmetric (Real)\n(Both A->B and B->A)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax7.set_xlabel('Target Cell Type', fontsize=10)
-ax7.set_ylabel('Source Cell Type', fontsize=10)
-ax7.tick_params(axis='x', rotation=45, labelsize=7)
-ax7.tick_params(axis='y', rotation=0, labelsize=7)
+mask7 = reverse_only_fraction_ordered == 0
+create_log_heatmap(reverse_only_fraction_ordered, mask7, ax7,
+                   'Reverse-Only (Real)\n(B->A, not A->B)',
+                   'Target Cell Type', 'Source Cell Type')
 
-# No-Connection (Real)
+# Column 3: Symmetric (Real)
 ax8 = fig.add_subplot(gs[1, 3])
-mask8 = no_connection_fraction_ordered == 0
-sns.heatmap(no_connection_fraction_ordered, annot=True, fmt='.2f', cmap='YlOrRd', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask8, cbar_kws={'label': 'Fraction'}, ax=ax8,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=1)
-ax8.set_title('No-Connection (Real)\n(Neither A->B nor B->A)', 
-             fontsize=12, fontweight='bold', pad=10)
-ax8.set_xlabel('Target Cell Type', fontsize=10)
-ax8.set_ylabel('Source Cell Type', fontsize=10)
-ax8.tick_params(axis='x', rotation=45, labelsize=7)
-ax8.tick_params(axis='y', rotation=0, labelsize=7)
+mask8 = symmetric_fraction_ordered == 0
+create_log_heatmap(symmetric_fraction_ordered, mask8, ax8,
+                   'Symmetric (Real)\n(Both A->B and B->A)',
+                   'Target Cell Type', 'Source Cell Type')
 
 # Calculate p-values for statistical significance
 print("\n=== CALCULATING P-VALUES ===")
@@ -385,82 +356,82 @@ for i in range(len(ordered_cell_types)):
             elif expected_prob_no_conn == 1 and observed_no_conn < total:
                 no_connection_pvalue_matrix[i, j] = 0.0
 
-# Row 3: P-values
-# Forward-Only P-values
+# Row 3: P-values (matching column order: No-Connection, Forward-Only, Reverse-Only, Symmetric)
+# Column 0: No-Connection P-values
 ax9 = fig.add_subplot(gs[2, 0])
 mask9 = total_possible_pairs_counts_ordered == 0
-pval_log_forward = np.where(forward_only_pvalue_matrix > 0, 
-                            -np.log10(forward_only_pvalue_matrix + 1e-10),
-                            np.full_like(forward_only_pvalue_matrix, 10))
-exponent_forward = np.where(forward_only_pvalue_matrix > 0,
-                           np.round(np.log10(forward_only_pvalue_matrix + 1e-10)).astype(int),
-                           np.full_like(forward_only_pvalue_matrix, -10, dtype=int))
-annot_forward = np.where(mask9, '', exponent_forward.astype(str))
-sns.heatmap(pval_log_forward, annot=annot_forward, fmt='', cmap='RdYlGn_r', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask9, cbar_kws={'label': '-log10(p-value)'}, ax=ax9,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=5)
-ax9.set_title('Forward-Only P-values', fontsize=12, fontweight='bold', pad=10)
-ax9.set_xlabel('Target Cell Type', fontsize=10)
-ax9.set_ylabel('Source Cell Type', fontsize=10)
-ax9.tick_params(axis='x', rotation=45, labelsize=7)
-ax9.tick_params(axis='y', rotation=0, labelsize=7)
-
-# Reverse-Only P-values
-ax10 = fig.add_subplot(gs[2, 1])
-mask10 = total_possible_pairs_counts_ordered == 0
-pval_log_reverse = np.where(reverse_only_pvalue_matrix > 0, 
-                            -np.log10(reverse_only_pvalue_matrix + 1e-10),
-                            np.full_like(reverse_only_pvalue_matrix, 10))
-exponent_reverse = np.where(reverse_only_pvalue_matrix > 0,
-                           np.round(np.log10(reverse_only_pvalue_matrix + 1e-10)).astype(int),
-                           np.full_like(reverse_only_pvalue_matrix, -10, dtype=int))
-annot_reverse = np.where(mask10, '', exponent_reverse.astype(str))
-sns.heatmap(pval_log_reverse, annot=annot_reverse, fmt='', cmap='RdYlGn_r', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask10, cbar_kws={'label': '-log10(p-value)'}, ax=ax10,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=5)
-ax10.set_title('Reverse-Only P-values', fontsize=12, fontweight='bold', pad=10)
-ax10.set_xlabel('Target Cell Type', fontsize=10)
-ax10.set_ylabel('Source Cell Type', fontsize=10)
-ax10.tick_params(axis='x', rotation=45, labelsize=7)
-ax10.tick_params(axis='y', rotation=0, labelsize=7)
-
-# Symmetric P-values
-ax11 = fig.add_subplot(gs[2, 2])
-mask11 = total_possible_pairs_counts_ordered == 0
-pval_log_symmetric = np.where(symmetric_pvalue_matrix > 0, 
-                              -np.log10(symmetric_pvalue_matrix + 1e-10),
-                              np.full_like(symmetric_pvalue_matrix, 10))
-exponent_symmetric = np.where(symmetric_pvalue_matrix > 0,
-                              np.round(np.log10(symmetric_pvalue_matrix + 1e-10)).astype(int),
-                              np.full_like(symmetric_pvalue_matrix, -10, dtype=int))
-annot_symmetric = np.where(mask11, '', exponent_symmetric.astype(str))
-sns.heatmap(pval_log_symmetric, annot=annot_symmetric, fmt='', cmap='RdYlGn_r', 
-            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
-            mask=mask11, cbar_kws={'label': '-log10(p-value)'}, ax=ax11,
-            linewidths=0.5, linecolor='gray', vmin=0, vmax=5)
-ax11.set_title('Symmetric P-values', fontsize=12, fontweight='bold', pad=10)
-ax11.set_xlabel('Target Cell Type', fontsize=10)
-ax11.set_ylabel('Source Cell Type', fontsize=10)
-ax11.tick_params(axis='x', rotation=45, labelsize=7)
-ax11.tick_params(axis='y', rotation=0, labelsize=7)
-
-# No-Connection P-values
-ax12 = fig.add_subplot(gs[2, 3])
-mask12 = total_possible_pairs_counts_ordered == 0
 pval_log_no_conn = np.where(no_connection_pvalue_matrix > 0, 
                             -np.log10(no_connection_pvalue_matrix + 1e-10),
                             np.full_like(no_connection_pvalue_matrix, 10))
 exponent_no_conn = np.where(no_connection_pvalue_matrix > 0,
                            np.round(np.log10(no_connection_pvalue_matrix + 1e-10)).astype(int),
                            np.full_like(no_connection_pvalue_matrix, -10, dtype=int))
-annot_no_conn = np.where(mask12, '', exponent_no_conn.astype(str))
+annot_no_conn = np.where(mask9, '', exponent_no_conn.astype(str))
 sns.heatmap(pval_log_no_conn, annot=annot_no_conn, fmt='', cmap='RdYlGn_r', 
+            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
+            mask=mask9, cbar_kws={'label': '-log10(p-value)'}, ax=ax9,
+            linewidths=0.5, linecolor='gray', vmin=0, vmax=5)
+ax9.set_title('No-Connection P-values', fontsize=12, fontweight='bold', pad=10)
+ax9.set_xlabel('Target Cell Type', fontsize=10)
+ax9.set_ylabel('Source Cell Type', fontsize=10)
+ax9.tick_params(axis='x', rotation=45, labelsize=7)
+ax9.tick_params(axis='y', rotation=0, labelsize=7)
+
+# Column 1: Forward-Only P-values
+ax10 = fig.add_subplot(gs[2, 1])
+mask10 = total_possible_pairs_counts_ordered == 0
+pval_log_forward = np.where(forward_only_pvalue_matrix > 0, 
+                            -np.log10(forward_only_pvalue_matrix + 1e-10),
+                            np.full_like(forward_only_pvalue_matrix, 10))
+exponent_forward = np.where(forward_only_pvalue_matrix > 0,
+                           np.round(np.log10(forward_only_pvalue_matrix + 1e-10)).astype(int),
+                           np.full_like(forward_only_pvalue_matrix, -10, dtype=int))
+annot_forward = np.where(mask10, '', exponent_forward.astype(str))
+sns.heatmap(pval_log_forward, annot=annot_forward, fmt='', cmap='RdYlGn_r', 
+            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
+            mask=mask10, cbar_kws={'label': '-log10(p-value)'}, ax=ax10,
+            linewidths=0.5, linecolor='gray', vmin=0, vmax=5)
+ax10.set_title('Forward-Only P-values', fontsize=12, fontweight='bold', pad=10)
+ax10.set_xlabel('Target Cell Type', fontsize=10)
+ax10.set_ylabel('Source Cell Type', fontsize=10)
+ax10.tick_params(axis='x', rotation=45, labelsize=7)
+ax10.tick_params(axis='y', rotation=0, labelsize=7)
+
+# Column 2: Reverse-Only P-values
+ax11 = fig.add_subplot(gs[2, 2])
+mask11 = total_possible_pairs_counts_ordered == 0
+pval_log_reverse = np.where(reverse_only_pvalue_matrix > 0, 
+                            -np.log10(reverse_only_pvalue_matrix + 1e-10),
+                            np.full_like(reverse_only_pvalue_matrix, 10))
+exponent_reverse = np.where(reverse_only_pvalue_matrix > 0,
+                           np.round(np.log10(reverse_only_pvalue_matrix + 1e-10)).astype(int),
+                           np.full_like(reverse_only_pvalue_matrix, -10, dtype=int))
+annot_reverse = np.where(mask11, '', exponent_reverse.astype(str))
+sns.heatmap(pval_log_reverse, annot=annot_reverse, fmt='', cmap='RdYlGn_r', 
+            xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
+            mask=mask11, cbar_kws={'label': '-log10(p-value)'}, ax=ax11,
+            linewidths=0.5, linecolor='gray', vmin=0, vmax=5)
+ax11.set_title('Reverse-Only P-values', fontsize=12, fontweight='bold', pad=10)
+ax11.set_xlabel('Target Cell Type', fontsize=10)
+ax11.set_ylabel('Source Cell Type', fontsize=10)
+ax11.tick_params(axis='x', rotation=45, labelsize=7)
+ax11.tick_params(axis='y', rotation=0, labelsize=7)
+
+# Column 3: Symmetric P-values
+ax12 = fig.add_subplot(gs[2, 3])
+mask12 = total_possible_pairs_counts_ordered == 0
+pval_log_symmetric = np.where(symmetric_pvalue_matrix > 0, 
+                              -np.log10(symmetric_pvalue_matrix + 1e-10),
+                              np.full_like(symmetric_pvalue_matrix, 10))
+exponent_symmetric = np.where(symmetric_pvalue_matrix > 0,
+                              np.round(np.log10(symmetric_pvalue_matrix + 1e-10)).astype(int),
+                              np.full_like(symmetric_pvalue_matrix, -10, dtype=int))
+annot_symmetric = np.where(mask12, '', exponent_symmetric.astype(str))
+sns.heatmap(pval_log_symmetric, annot=annot_symmetric, fmt='', cmap='RdYlGn_r', 
             xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
             mask=mask12, cbar_kws={'label': '-log10(p-value)'}, ax=ax12,
             linewidths=0.5, linecolor='gray', vmin=0, vmax=5)
-ax12.set_title('No-Connection P-values', fontsize=12, fontweight='bold', pad=10)
+ax12.set_title('Symmetric P-values', fontsize=12, fontweight='bold', pad=10)
 ax12.set_xlabel('Target Cell Type', fontsize=10)
 ax12.set_ylabel('Source Cell Type', fontsize=10)
 ax12.tick_params(axis='x', rotation=45, labelsize=7)
