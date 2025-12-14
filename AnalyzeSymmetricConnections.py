@@ -5,6 +5,8 @@ from scipy.sparse import load_npz, spmatrix
 from scipy.stats import binomtest
 from collections import Counter
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.patches import FancyArrowPatch, Circle
 import seaborn as sns
 import os
 
@@ -212,17 +214,75 @@ sns.set_style("whitegrid")
 # Import LogNorm for log scale
 from matplotlib.colors import LogNorm
 
-# Single figure with all symmetry analyses: 3 rows x 4 columns
+# Single figure with all symmetry analyses: 4 rows x 4 columns
+# Row 0: Connection diagrams
 # Row 1: Null hypothesis (independent connections)
 # Row 2: Real data
 # Row 3: P-values
 # Column order: No-Connection, Forward-Only, Reverse-Only, Symmetric
-fig = plt.figure(figsize=(40, 30))
-gs = fig.add_gridspec(3, 4, hspace=0.3, wspace=0.3)
+fig = plt.figure(figsize=(40, 32))
+gs = fig.add_gridspec(4, 4, hspace=0.25, wspace=0.3, height_ratios=[0.15, 1, 1, 1])
+
+# Helper function to draw connection diagram
+def draw_connection_diagram(ax, connection_type):
+    """Draw minimalist A-B connection diagram"""
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylim(-0.3, 0.3)
+    ax.axis('off')
+    
+    # Draw circles for A and B
+    circle_a = Circle((0, 0), 0.15, fill=True, color='black', zorder=3)
+    circle_b = Circle((1, 0), 0.15, fill=True, color='black', zorder=3)
+    ax.add_patch(circle_a)
+    ax.add_patch(circle_b)
+    
+    # Add labels
+    ax.text(0, -0.25, 'A', ha='center', va='top', fontsize=14, fontweight='bold')
+    ax.text(1, -0.25, 'B', ha='center', va='top', fontsize=14, fontweight='bold')
+    
+    # Draw arrows based on connection type
+    if connection_type == 'no_connection':
+        # No arrows
+        pass
+    elif connection_type == 'forward_only':
+        # A -> B
+        arrow = FancyArrowPatch((0.15, 0), (0.85, 0), 
+                               arrowstyle='->', mutation_scale=20, 
+                               linewidth=2, color='black', zorder=2)
+        ax.add_patch(arrow)
+    elif connection_type == 'reverse_only':
+        # B -> A
+        arrow = FancyArrowPatch((0.85, 0), (0.15, 0), 
+                               arrowstyle='->', mutation_scale=20, 
+                               linewidth=2, color='black', zorder=2)
+        ax.add_patch(arrow)
+    elif connection_type == 'symmetric':
+        # A <-> B (bidirectional)
+        arrow1 = FancyArrowPatch((0.15, 0.1), (0.85, 0.1), 
+                                arrowstyle='->', mutation_scale=20, 
+                                linewidth=2, color='black', zorder=2)
+        arrow2 = FancyArrowPatch((0.85, -0.1), (0.15, -0.1), 
+                                arrowstyle='->', mutation_scale=20, 
+                                linewidth=2, color='black', zorder=2)
+        ax.add_patch(arrow1)
+        ax.add_patch(arrow2)
+
+# Row 0: Connection diagrams
+ax_diag0 = fig.add_subplot(gs[0, 0])
+draw_connection_diagram(ax_diag0, 'no_connection')
+
+ax_diag1 = fig.add_subplot(gs[0, 1])
+draw_connection_diagram(ax_diag1, 'forward_only')
+
+ax_diag2 = fig.add_subplot(gs[0, 2])
+draw_connection_diagram(ax_diag2, 'reverse_only')
+
+ax_diag3 = fig.add_subplot(gs[0, 3])
+draw_connection_diagram(ax_diag3, 'symmetric')
 
 # Helper function to create log-scaled heatmap
 def create_log_heatmap(data, mask, ax, title, xlabel, ylabel, vmin_offset=1e-6):
-    # Apply log scale: log10(data + small_offset) to handle zeros
+    # Apply log scale: log10(data + small_offset) to handle zeros for color mapping
     data_log = np.log10(data + vmin_offset)
     # Find min and max for colorbar (excluding masked values)
     valid_data = data[~mask]
@@ -233,7 +293,16 @@ def create_log_heatmap(data, mask, ax, title, xlabel, ylabel, vmin_offset=1e-6):
         vmin_log = -6
         vmax_log = 0
     
-    sns.heatmap(data_log, annot=True, fmt='.2f', cmap='YlOrRd', 
+    # Create annotation matrix with original (linear) values formatted as strings
+    annot_data = np.empty(data.shape, dtype=object)
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            if mask[i, j]:
+                annot_data[i, j] = ''
+            else:
+                annot_data[i, j] = f'{data[i, j]:.2f}'
+    
+    sns.heatmap(data_log, annot=annot_data, fmt='', cmap='YlOrRd', 
                 xticklabels=ordered_cell_types, yticklabels=ordered_cell_types,
                 mask=mask, cbar_kws={'label': 'log10(Fraction)'}, ax=ax,
                 linewidths=0.5, linecolor='gray', vmin=vmin_log, vmax=vmax_log)
@@ -245,28 +314,28 @@ def create_log_heatmap(data, mask, ax, title, xlabel, ylabel, vmin_offset=1e-6):
 
 # Row 1: Null Hypothesis
 # Column 0: No-Connection (Null)
-ax1 = fig.add_subplot(gs[0, 0])
+ax1 = fig.add_subplot(gs[1, 0])
 mask1 = no_connection_null_ordered == 0
 create_log_heatmap(no_connection_null_ordered, mask1, ax1,
                    'No-Connection (Null)\n(Neither A->B nor B->A)',
                    'Target Cell Type', 'Source Cell Type')
 
 # Column 1: Forward-Only (Null)
-ax2 = fig.add_subplot(gs[0, 1])
+ax2 = fig.add_subplot(gs[1, 1])
 mask2 = forward_only_null_ordered == 0
 create_log_heatmap(forward_only_null_ordered, mask2, ax2,
                    'Forward-Only (Null)\n(A->B, not B->A)',
                    'Target Cell Type', 'Source Cell Type')
 
 # Column 2: Reverse-Only (Null)
-ax3 = fig.add_subplot(gs[0, 2])
+ax3 = fig.add_subplot(gs[1, 2])
 mask3 = reverse_only_null_ordered == 0
 create_log_heatmap(reverse_only_null_ordered, mask3, ax3,
                    'Reverse-Only (Null)\n(B->A, not A->B)',
                    'Target Cell Type', 'Source Cell Type')
 
 # Column 3: Symmetric (Null)
-ax4 = fig.add_subplot(gs[0, 3])
+ax4 = fig.add_subplot(gs[1, 3])
 mask4 = symmetric_null_ordered == 0
 create_log_heatmap(symmetric_null_ordered, mask4, ax4,
                    'Symmetric (Null)\n(Both A->B and B->A)',
@@ -274,28 +343,28 @@ create_log_heatmap(symmetric_null_ordered, mask4, ax4,
 
 # Row 2: Real Data
 # Column 0: No-Connection (Real)
-ax5 = fig.add_subplot(gs[1, 0])
+ax5 = fig.add_subplot(gs[2, 0])
 mask5 = no_connection_fraction_ordered == 0
 create_log_heatmap(no_connection_fraction_ordered, mask5, ax5,
                    'No-Connection (Real)\n(Neither A->B nor B->A)',
                    'Target Cell Type', 'Source Cell Type')
 
 # Column 1: Forward-Only (Real)
-ax6 = fig.add_subplot(gs[1, 1])
+ax6 = fig.add_subplot(gs[2, 1])
 mask6 = forward_only_fraction_ordered == 0
 create_log_heatmap(forward_only_fraction_ordered, mask6, ax6,
                    'Forward-Only (Real)\n(A->B, not B->A)',
                    'Target Cell Type', 'Source Cell Type')
 
 # Column 2: Reverse-Only (Real)
-ax7 = fig.add_subplot(gs[1, 2])
+ax7 = fig.add_subplot(gs[2, 2])
 mask7 = reverse_only_fraction_ordered == 0
 create_log_heatmap(reverse_only_fraction_ordered, mask7, ax7,
                    'Reverse-Only (Real)\n(B->A, not A->B)',
                    'Target Cell Type', 'Source Cell Type')
 
 # Column 3: Symmetric (Real)
-ax8 = fig.add_subplot(gs[1, 3])
+ax8 = fig.add_subplot(gs[2, 3])
 mask8 = symmetric_fraction_ordered == 0
 create_log_heatmap(symmetric_fraction_ordered, mask8, ax8,
                    'Symmetric (Real)\n(Both A->B and B->A)',
@@ -358,7 +427,7 @@ for i in range(len(ordered_cell_types)):
 
 # Row 3: P-values (matching column order: No-Connection, Forward-Only, Reverse-Only, Symmetric)
 # Column 0: No-Connection P-values
-ax9 = fig.add_subplot(gs[2, 0])
+ax9 = fig.add_subplot(gs[3, 0])
 mask9 = total_possible_pairs_counts_ordered == 0
 pval_log_no_conn = np.where(no_connection_pvalue_matrix > 0, 
                             -np.log10(no_connection_pvalue_matrix + 1e-10),
@@ -378,7 +447,7 @@ ax9.tick_params(axis='x', rotation=45, labelsize=7)
 ax9.tick_params(axis='y', rotation=0, labelsize=7)
 
 # Column 1: Forward-Only P-values
-ax10 = fig.add_subplot(gs[2, 1])
+ax10 = fig.add_subplot(gs[3, 1])
 mask10 = total_possible_pairs_counts_ordered == 0
 pval_log_forward = np.where(forward_only_pvalue_matrix > 0, 
                             -np.log10(forward_only_pvalue_matrix + 1e-10),
@@ -398,7 +467,7 @@ ax10.tick_params(axis='x', rotation=45, labelsize=7)
 ax10.tick_params(axis='y', rotation=0, labelsize=7)
 
 # Column 2: Reverse-Only P-values
-ax11 = fig.add_subplot(gs[2, 2])
+ax11 = fig.add_subplot(gs[3, 2])
 mask11 = total_possible_pairs_counts_ordered == 0
 pval_log_reverse = np.where(reverse_only_pvalue_matrix > 0, 
                             -np.log10(reverse_only_pvalue_matrix + 1e-10),
@@ -418,7 +487,7 @@ ax11.tick_params(axis='x', rotation=45, labelsize=7)
 ax11.tick_params(axis='y', rotation=0, labelsize=7)
 
 # Column 3: Symmetric P-values
-ax12 = fig.add_subplot(gs[2, 3])
+ax12 = fig.add_subplot(gs[3, 3])
 mask12 = total_possible_pairs_counts_ordered == 0
 pval_log_symmetric = np.where(symmetric_pvalue_matrix > 0, 
                               -np.log10(symmetric_pvalue_matrix + 1e-10),
