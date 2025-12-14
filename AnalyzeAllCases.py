@@ -54,6 +54,9 @@ def analyze_case(case_name, case_description, neurons_df, syn_mat_sparse, mappin
     i_neuron_order = ['BC', 'MC', 'BPC', 'NGC', 'Unsure I']
     ordered_cell_types = [ct for ct in e_neuron_order + i_neuron_order if ct in cell_type_counts]
     
+    # Store matrix_idx_to_cell_type for individual cell matrix
+    stored_matrix_idx_to_cell_type = matrix_idx_to_cell_type.copy()
+    
     # Initialize matrices based on case
     if case_name == 'both_known':
         # Use connectivity matrix
@@ -219,15 +222,117 @@ def analyze_case(case_name, case_description, neurons_df, syn_mat_sparse, mappin
     print(f"Mean synapses per connection: {mean_synapses_per_connection:.2f}")
     
     # Create visualizations
-    create_visualizations(case_name, case_description, neurons_df, cell_type_counts, clf_type_counts,
-                         cell_type_matrix, cell_type_synapse_matrix, unique_cell_types, ordered_cell_types,
-                         degree_stats, individual_df, e_neuron_order, i_neuron_order, figure_dir)
+    if case_name == 'both_known':
+        create_visualizations(case_name, case_description, neurons_df, cell_type_counts, clf_type_counts,
+                             cell_type_matrix, cell_type_synapse_matrix, unique_cell_types, ordered_cell_types,
+                             degree_stats, individual_df, e_neuron_order, i_neuron_order, figure_dir,
+                             syn_mat_sparse, mapping, stored_matrix_idx_to_cell_type)
+    else:
+        create_visualizations(case_name, case_description, neurons_df, cell_type_counts, clf_type_counts,
+                             cell_type_matrix, cell_type_synapse_matrix, unique_cell_types, ordered_cell_types,
+                             degree_stats, individual_df, e_neuron_order, i_neuron_order, figure_dir)
     
     return cell_type_matrix, cell_type_synapse_matrix, degree_stats, individual_df
 
+def create_individual_cell_matrix(syn_mat_sparse, mapping, matrix_idx_to_cell_type, 
+                                  ordered_cell_types, cell_type_counts, e_neuron_order, 
+                                  i_neuron_order, case_description, figure_dir):
+    """Create individual per-cell connectivity matrix organized by cell type"""
+    
+    # Create ordered list of neuron indices grouped by cell type
+    ordered_neuron_indices = []
+    neuron_to_new_idx = {}
+    
+    for cell_type in ordered_cell_types:
+        # Get all neurons of this cell type
+        neurons_of_type = [idx for idx, ct in matrix_idx_to_cell_type.items() if ct == cell_type]
+        # Sort by original index for consistency
+        neurons_of_type.sort()
+        ordered_neuron_indices.extend(neurons_of_type)
+    
+    # Create mapping from old index to new index
+    for new_idx, old_idx in enumerate(ordered_neuron_indices):
+        neuron_to_new_idx[old_idx] = new_idx
+    
+    # Build reordered matrix
+    n_neurons = len(ordered_neuron_indices)
+    print(f"  Creating {n_neurons}x{n_neurons} matrix...")
+    
+    # Convert sparse matrix to dense for reordering (or use sparse operations)
+    # For large matrices, we'll use sparse operations and then convert
+    reordered_matrix = np.zeros((n_neurons, n_neurons))
+    
+    for old_i in range(syn_mat_sparse.shape[0]):
+        if old_i in neuron_to_new_idx:
+            new_i = neuron_to_new_idx[old_i]
+            row = syn_mat_sparse[old_i, :]
+            if row.nnz > 0:
+                for old_j, weight in zip(row.indices, row.data):
+                    if old_j in neuron_to_new_idx:
+                        new_j = neuron_to_new_idx[old_j]
+                        reordered_matrix[new_i, new_j] = weight
+    
+    print(f"  Matrix has {np.count_nonzero(reordered_matrix)} non-zero entries")
+    print(f"  Matrix shape: {reordered_matrix.shape}")
+    print(f"  Matrix min: {reordered_matrix.min()}, max: {reordered_matrix.max()}")
+    
+    # Create visualization
+    fig, ax = plt.subplots(figsize=(20, 20))
+    
+    # Use linear scale (not log) - mean synapses per connection is ~5
+    mask = reordered_matrix == 0
+    
+    # Create heatmap using seaborn - properly displays the matrix
+    sns.heatmap(reordered_matrix, mask=mask, cmap='YlOrRd', cbar_kws={'label': 'Synapses'},
+                ax=ax, xticklabels=False, yticklabels=False, linewidths=0, rasterized=True,
+                square=True, cbar=True)
+    
+    # Add divider lines between cell type groups (seaborn uses 0.5 offset)
+    current_pos = 0
+    for cell_type in ordered_cell_types:
+        count = cell_type_counts[cell_type]
+        # Vertical line
+        ax.axvline(x=current_pos + 0.5, color='black', linewidth=1.5, alpha=0.8)
+        # Horizontal line
+        ax.axhline(y=current_pos + 0.5, color='black', linewidth=1.5, alpha=0.8)
+        current_pos += count
+    
+    # Add final lines
+    ax.axvline(x=n_neurons - 0.5, color='black', linewidth=1.5, alpha=0.8)
+    ax.axhline(y=n_neurons - 0.5, color='black', linewidth=1.5, alpha=0.8)
+    
+    # Calculate cell type label positions (centers of each cell type group)
+    current_pos = 0
+    label_positions = []
+    label_names = []
+    for cell_type in ordered_cell_types:
+        count = cell_type_counts[cell_type]
+        mid_pos = current_pos + count / 2
+        label_positions.append(mid_pos)
+        label_names.append(cell_type)
+        current_pos += count
+    
+    # Set ticks and labels for cell types only (bottom and left)
+    ax.set_xticks(label_positions)
+    ax.set_xticklabels(label_names, rotation=90, ha='center', fontsize=10, fontweight='bold')
+    ax.set_yticks(label_positions)
+    ax.set_yticklabels(label_names, rotation=0, va='center', fontsize=10, fontweight='bold')
+    
+    ax.set_xlabel('Target Neuron (organized by cell type)', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Source Neuron (organized by cell type)', fontsize=12, fontweight='bold')
+    ax.set_title(f'{case_description}\nIndividual Per-Cell Connectivity Matrix\n(Each pixel = synapse count between two neurons)', 
+                 fontsize=14, fontweight='bold', pad=15)
+    
+    # Adjust layout to accommodate side bars
+    plt.tight_layout(rect=[0.02, 0.02, 0.98, 0.98])
+    plt.savefig(f'{figure_dir}/figure4_individual_cell_matrix.png', dpi=300, bbox_inches='tight')
+    print(f"Saved: {figure_dir}/figure4_individual_cell_matrix.png")
+    plt.close()
+
 def create_visualizations(case_name, case_description, neurons_df, cell_type_counts, clf_type_counts,
                          cell_type_matrix, cell_type_synapse_matrix, unique_cell_types, ordered_cell_types,
-                         degree_stats, individual_df, e_neuron_order, i_neuron_order, figure_dir):
+                         degree_stats, individual_df, e_neuron_order, i_neuron_order, figure_dir,
+                         syn_mat_sparse=None, mapping=None, matrix_idx_to_cell_type=None):
     """Create all visualizations for a case"""
     
     print(f"\n=== CREATING VISUALIZATIONS ===")
@@ -404,6 +509,13 @@ def create_visualizations(case_name, case_description, neurons_df, cell_type_cou
         plt.savefig(f'{figure_dir}/figure2_connectivity_matrices.png', dpi=300, bbox_inches='tight')
         print(f"Saved: {figure_dir}/figure2_connectivity_matrices.png")
         plt.close()
+        
+        # Figure 4: Individual Per-Cell Connectivity Matrix
+        if syn_mat_sparse is not None and mapping is not None and matrix_idx_to_cell_type is not None:
+            print(f"\nCreating individual per-cell connectivity matrix...")
+            create_individual_cell_matrix(syn_mat_sparse, mapping, matrix_idx_to_cell_type, 
+                                          ordered_cell_types, cell_type_counts, e_neuron_order, 
+                                          i_neuron_order, case_description, figure_dir)
     
     # Figure 3: Degree and Synapse Statistics (Box Plots)
     if len(individual_df) > 0:
