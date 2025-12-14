@@ -139,12 +139,44 @@ print(f"Total connections: {total_connections:,}")
 print(f"Total synapses: {total_synapses:,.0f}")
 print(f"Mean synapses per connection: {mean_synapses_per_connection:.2f}")
 
+# Compute individual neuron statistics for box plots
+print("\n=== COMPUTING INDIVIDUAL NEURON STATISTICS ===")
+individual_stats = {
+    'cell_type': [],
+    'out_degree': [],
+    'in_degree': [],
+    'out_synapses': [],
+    'in_synapses': []
+}
+
+for i in range(syn_mat_sparse.shape[0]):
+    cell_type = matrix_idx_to_cell_type.get(i, 'Unknown')
+    
+    # Out-degree and out-synapses
+    row = syn_mat_sparse[i, :]
+    out_degree = row.nnz
+    out_synapses = row.data.sum() if row.nnz > 0 else 0
+    
+    # In-degree and in-synapses
+    col = syn_mat_sparse[:, i]
+    in_degree = col.nnz
+    in_synapses = col.data.sum() if col.nnz > 0 else 0
+    
+    individual_stats['cell_type'].append(cell_type)
+    individual_stats['out_degree'].append(out_degree)
+    individual_stats['in_degree'].append(in_degree)
+    individual_stats['out_synapses'].append(out_synapses)
+    individual_stats['in_synapses'].append(in_synapses)
+
+# Convert to DataFrame for easier manipulation
+individual_df = pd.DataFrame(individual_stats)
+
 # In-degree and out-degree by cell type
 print("\n=== DEGREE STATISTICS BY CELL TYPE ===")
 print(f"{'Cell Type':<20} {'Mean Out-Degree':<20} {'Mean In-Degree':<20} {'Mean Out-Synapses':<20} {'Mean In-Synapses':<20}")
 print("-" * 100)
 
-# Store degree statistics for visualization
+# Store degree statistics for visualization (mean values)
 degree_stats = {
     'cell_types': [],
     'out_degree': [],
@@ -361,48 +393,120 @@ plt.savefig('figures/figure2_connectivity_matrices.png', dpi=300, bbox_inches='t
 print("Saved: figures/figure2_connectivity_matrices.png")
 plt.close()
 
-# Figure 3: Degree and Synapse Statistics
-fig, axes = plt.subplots(2, 2, figsize=(18, 14))
+# Figure 3: Degree and Synapse Statistics (Box Plots)
+fig, axes = plt.subplots(1, 2, figsize=(20, 10))
 
-# Out-degree
-axes[0, 0].barh(range(len(degree_stats_ordered['cell_types'])), 
-                degree_stats_ordered['out_degree'], color=colors_ordered, alpha=0.7)
-axes[0, 0].set_yticks(range(len(degree_stats_ordered['cell_types'])))
-axes[0, 0].set_yticklabels(degree_stats_ordered['cell_types'])
-axes[0, 0].set_xlabel('Mean Out-Degree', fontsize=11)
-axes[0, 0].set_title('Mean Out-Degree by Cell Type', fontsize=12, fontweight='bold')
-axes[0, 0].invert_yaxis()
-axes[0, 0].grid(axis='x', alpha=0.3)
+# Filter individual_df to only include ordered cell types
+individual_df_ordered = individual_df[individual_df['cell_type'].isin(ordered_cell_types)].copy()
+individual_df_ordered['cell_type'] = pd.Categorical(individual_df_ordered['cell_type'], 
+                                                      categories=ordered_cell_types, ordered=True)
+individual_df_ordered = individual_df_ordered.sort_values('cell_type')
 
-# In-degree
-axes[0, 1].barh(range(len(degree_stats_ordered['cell_types'])), 
-                degree_stats_ordered['in_degree'], color=colors_ordered, alpha=0.7)
-axes[0, 1].set_yticks(range(len(degree_stats_ordered['cell_types'])))
-axes[0, 1].set_yticklabels(degree_stats_ordered['cell_types'])
-axes[0, 1].set_xlabel('Mean In-Degree', fontsize=11)
-axes[0, 1].set_title('Mean In-Degree by Cell Type', fontsize=12, fontweight='bold')
-axes[0, 1].invert_yaxis()
-axes[0, 1].grid(axis='x', alpha=0.3)
+# Prepare data for grouped box plots
+# Left plot: Out-degree and Out-synapses
+out_degree_data = []
+out_synapse_data = []
+out_positions_degree = []
+out_positions_synapse = []
+out_labels = []
+out_colors_degree = []
+out_colors_synapse = []
 
-# Out-synapses
-axes[1, 0].barh(range(len(degree_stats_ordered['cell_types'])), 
-                degree_stats_ordered['out_synapses'], color=colors_ordered, alpha=0.7)
-axes[1, 0].set_yticks(range(len(degree_stats_ordered['cell_types'])))
-axes[1, 0].set_yticklabels(degree_stats_ordered['cell_types'])
-axes[1, 0].set_xlabel('Mean Out-Synapses', fontsize=11)
-axes[1, 0].set_title('Mean Out-Synapses by Cell Type', fontsize=12, fontweight='bold')
-axes[1, 0].invert_yaxis()
-axes[1, 0].grid(axis='x', alpha=0.3)
+pos = 1
+for ct in ordered_cell_types:
+    ct_data = individual_df_ordered[individual_df_ordered['cell_type'] == ct]
+    if len(ct_data) > 0:
+        out_degree_data.append(ct_data['out_degree'].values)
+        out_synapse_data.append(ct_data['out_synapses'].values)
+        out_positions_degree.append(pos - 0.2)
+        out_positions_synapse.append(pos + 0.2)
+        out_labels.append(ct)
+        ct_color = get_cell_type_color(ct)
+        out_colors_degree.append(ct_color)
+        # Slightly lighter/darker for synapses to differentiate
+        out_colors_synapse.append(ct_color)
+        pos += 1
 
-# In-synapses
-axes[1, 1].barh(range(len(degree_stats_ordered['cell_types'])), 
-                degree_stats_ordered['in_synapses'], color=colors_ordered, alpha=0.7)
-axes[1, 1].set_yticks(range(len(degree_stats_ordered['cell_types'])))
-axes[1, 1].set_yticklabels(degree_stats_ordered['cell_types'])
-axes[1, 1].set_xlabel('Mean In-Synapses', fontsize=11)
-axes[1, 1].set_title('Mean In-Synapses by Cell Type', fontsize=12, fontweight='bold')
-axes[1, 1].invert_yaxis()
-axes[1, 1].grid(axis='x', alpha=0.3)
+# Create box plots for out-degree and out-synapses
+bp1_degree = axes[0].boxplot(out_degree_data, positions=out_positions_degree, widths=0.3,
+                             patch_artist=True, showfliers=False, 
+                             boxprops=dict(alpha=0.8, linewidth=1.5),
+                             medianprops=dict(linewidth=2))
+bp1_synapse = axes[0].boxplot(out_synapse_data, positions=out_positions_synapse, widths=0.3,
+                              patch_artist=True, showfliers=False,
+                              boxprops=dict(alpha=0.5, linewidth=1.5, linestyle='--'),
+                              medianprops=dict(linewidth=2, linestyle='--'))
+
+for patch, color in zip(bp1_degree['boxes'], out_colors_degree):
+    patch.set_facecolor(color)
+    patch.set_edgecolor(color)
+for patch, color in zip(bp1_synapse['boxes'], out_colors_synapse):
+    patch.set_facecolor(color)
+    patch.set_edgecolor(color)
+
+axes[0].set_xticks(range(1, len(out_labels) + 1))
+axes[0].set_xticklabels(out_labels, rotation=45, ha='right', fontsize=10)
+axes[0].set_ylabel('Count', fontsize=12)
+axes[0].set_title('Out-Degree and Out-Synapses by Cell Type', fontsize=14, fontweight='bold')
+axes[0].grid(False)
+axes[0].spines['top'].set_visible(False)
+axes[0].spines['right'].set_visible(False)
+
+# Right plot: In-degree and In-synapses
+in_degree_data = []
+in_synapse_data = []
+in_positions_degree = []
+in_positions_synapse = []
+in_labels = []
+in_colors_degree = []
+in_colors_synapse = []
+
+pos = 1
+for ct in ordered_cell_types:
+    ct_data = individual_df_ordered[individual_df_ordered['cell_type'] == ct]
+    if len(ct_data) > 0:
+        in_degree_data.append(ct_data['in_degree'].values)
+        in_synapse_data.append(ct_data['in_synapses'].values)
+        in_positions_degree.append(pos - 0.2)
+        in_positions_synapse.append(pos + 0.2)
+        in_labels.append(ct)
+        ct_color = get_cell_type_color(ct)
+        in_colors_degree.append(ct_color)
+        in_colors_synapse.append(ct_color)
+        pos += 1
+
+# Create box plots for in-degree and in-synapses
+bp2_degree = axes[1].boxplot(in_degree_data, positions=in_positions_degree, widths=0.3,
+                             patch_artist=True, showfliers=False,
+                             boxprops=dict(alpha=0.8, linewidth=1.5),
+                             medianprops=dict(linewidth=2))
+bp2_synapse = axes[1].boxplot(in_synapse_data, positions=in_positions_synapse, widths=0.3,
+                              patch_artist=True, showfliers=False,
+                              boxprops=dict(alpha=0.5, linewidth=1.5, linestyle='--'),
+                              medianprops=dict(linewidth=2, linestyle='--'))
+
+for patch, color in zip(bp2_degree['boxes'], in_colors_degree):
+    patch.set_facecolor(color)
+    patch.set_edgecolor(color)
+for patch, color in zip(bp2_synapse['boxes'], in_colors_synapse):
+    patch.set_facecolor(color)
+    patch.set_edgecolor(color)
+
+axes[1].set_xticks(range(1, len(in_labels) + 1))
+axes[1].set_xticklabels(in_labels, rotation=45, ha='right', fontsize=10)
+axes[1].set_ylabel('Count', fontsize=12)
+axes[1].set_title('In-Degree and In-Synapses by Cell Type', fontsize=14, fontweight='bold')
+axes[1].grid(False)
+axes[1].spines['top'].set_visible(False)
+axes[1].spines['right'].set_visible(False)
+
+# Add legend
+from matplotlib.patches import Patch
+legend_elements = [
+    Patch(facecolor='gray', alpha=0.8, label='Degree', linewidth=1.5),
+    Patch(facecolor='gray', alpha=0.5, label='Synapses', linewidth=1.5, linestyle='--')
+]
+axes[0].legend(handles=legend_elements, loc='upper left', fontsize=10, framealpha=0.9)
 
 plt.suptitle('Degree and Synapse Statistics by Cell Type', fontsize=16, fontweight='bold', y=0.995)
 plt.tight_layout(rect=[0, 0, 1, 0.99])
