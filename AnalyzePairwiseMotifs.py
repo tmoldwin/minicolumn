@@ -2,6 +2,7 @@ import pickle
 import pandas as pd
 import numpy as np
 from scipy.sparse import load_npz, spmatrix
+from scipy.stats import binomtest
 from collections import Counter
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -70,6 +71,13 @@ else:
     symmetric_fraction_matrix = np.zeros((n_cell_types, n_cell_types))
     no_connection_fraction_matrix = np.zeros((n_cell_types, n_cell_types))
 
+    # Matrices for counts (for statistical testing)
+    forward_only_counts_matrix = np.zeros((n_cell_types, n_cell_types), dtype=int)
+    reverse_only_counts_matrix = np.zeros((n_cell_types, n_cell_types), dtype=int)
+    symmetric_counts_matrix = np.zeros((n_cell_types, n_cell_types), dtype=int)
+    no_connection_counts_matrix = np.zeros((n_cell_types, n_cell_types), dtype=int)
+    total_pairs_counts_matrix = np.zeros((n_cell_types, n_cell_types), dtype=int)
+
     # Matrices for null hypothesis fractions
     forward_only_null_matrix = np.zeros((n_cell_types, n_cell_types))
     reverse_only_null_matrix = np.zeros((n_cell_types, n_cell_types))
@@ -119,6 +127,13 @@ else:
             # Calculate total possible pairs
             total_possible_pairs = len(source_neurons) * len(target_neurons)
             
+            # Store counts for statistical testing
+            forward_only_counts_matrix[i, j] = forward_only_pairs
+            reverse_only_counts_matrix[i, j] = reverse_only_pairs
+            symmetric_counts_matrix[i, j] = symmetric_pairs
+            no_connection_counts_matrix[i, j] = no_connection_pairs
+            total_pairs_counts_matrix[i, j] = total_possible_pairs
+            
             # Calculate actual fractions (normalize to sum to 1 over all possible pairs)
             if total_possible_pairs > 0:
                 forward_only_fraction_matrix[i, j] = forward_only_pairs / total_possible_pairs
@@ -160,6 +175,12 @@ else:
     symmetric_null_ordered = np.zeros((len(ordered_cell_types), len(ordered_cell_types)))
     no_connection_null_ordered = np.zeros((len(ordered_cell_types), len(ordered_cell_types)))
 
+    forward_only_counts_ordered = np.zeros((len(ordered_cell_types), len(ordered_cell_types)), dtype=int)
+    reverse_only_counts_ordered = np.zeros((len(ordered_cell_types), len(ordered_cell_types)), dtype=int)
+    symmetric_counts_ordered = np.zeros((len(ordered_cell_types), len(ordered_cell_types)), dtype=int)
+    no_connection_counts_ordered = np.zeros((len(ordered_cell_types), len(ordered_cell_types)), dtype=int)
+    total_pairs_counts_ordered = np.zeros((len(ordered_cell_types), len(ordered_cell_types)), dtype=int)
+
     for i, ct_i in enumerate(ordered_cell_types):
         orig_i = ordered_to_original_idx[ct_i]
         for j, ct_j in enumerate(ordered_cell_types):
@@ -172,6 +193,11 @@ else:
             reverse_only_null_ordered[i, j] = reverse_only_null_matrix[orig_i, orig_j]
             symmetric_null_ordered[i, j] = symmetric_null_matrix[orig_i, orig_j]
             no_connection_null_ordered[i, j] = no_connection_null_matrix[orig_i, orig_j]
+            forward_only_counts_ordered[i, j] = forward_only_counts_matrix[orig_i, orig_j]
+            reverse_only_counts_ordered[i, j] = reverse_only_counts_matrix[orig_i, orig_j]
+            symmetric_counts_ordered[i, j] = symmetric_counts_matrix[orig_i, orig_j]
+            no_connection_counts_ordered[i, j] = no_connection_counts_matrix[orig_i, orig_j]
+            total_pairs_counts_ordered[i, j] = total_pairs_counts_matrix[orig_i, orig_j]
 
     # Save analysis data
     print("\n=== SAVING ANALYSIS DATA ===")
@@ -185,6 +211,11 @@ else:
         'reverse_only_null_ordered': reverse_only_null_ordered,
         'symmetric_null_ordered': symmetric_null_ordered,
         'no_connection_null_ordered': no_connection_null_ordered,
+        'forward_only_counts_ordered': forward_only_counts_ordered,
+        'reverse_only_counts_ordered': reverse_only_counts_ordered,
+        'symmetric_counts_ordered': symmetric_counts_ordered,
+        'no_connection_counts_ordered': no_connection_counts_ordered,
+        'total_pairs_counts_ordered': total_pairs_counts_ordered,
     }
 
     with open(data_file, 'wb') as f:
@@ -207,6 +238,11 @@ forward_only_null_ordered = analysis_data['forward_only_null_ordered']
 reverse_only_null_ordered = analysis_data['reverse_only_null_ordered']
 symmetric_null_ordered = analysis_data['symmetric_null_ordered']
 no_connection_null_ordered = analysis_data['no_connection_null_ordered']
+forward_only_counts_ordered = analysis_data['forward_only_counts_ordered']
+reverse_only_counts_ordered = analysis_data['reverse_only_counts_ordered']
+symmetric_counts_ordered = analysis_data['symmetric_counts_ordered']
+no_connection_counts_ordered = analysis_data['no_connection_counts_ordered']
+total_pairs_counts_ordered = analysis_data['total_pairs_counts_ordered']
 
 print(f"Loaded data for {len(ordered_cell_types)} cell types")
 
@@ -229,51 +265,109 @@ axes = axes.flatten() if n_pairs > 1 else [axes] if n_rows == 1 else axes.flatte
 # Motif labels
 motif_labels = ['No Connection', 'Forward-Only\n(A→B)', 'Reverse-Only\n(B→A)', 'Symmetric\n(A↔B)']
 x = np.arange(len(motif_labels))
-width = 0.35  # Width of bars
+width = 0.3  # Width of bars (slightly narrower for more space)
+spacing = 0.15  # Spacing between bar groups
 
 pair_idx = 0
 for i, source_type in enumerate(ordered_cell_types):
     for j, target_type in enumerate(ordered_cell_types):
         ax = axes[pair_idx]
         
-        # Get expected (real) values
-        expected_values = [
+        # Get data (observed) values
+        data_values = [
             no_connection_fraction_ordered[i, j],
             forward_only_fraction_ordered[i, j],
             reverse_only_fraction_ordered[i, j],
             symmetric_fraction_ordered[i, j]
         ]
         
-        # Get null hypothesis values
-        null_values = [
+        # Get expected (null hypothesis) values
+        expected_values = [
             no_connection_null_ordered[i, j],
             forward_only_null_ordered[i, j],
             reverse_only_null_ordered[i, j],
             symmetric_null_ordered[i, j]
         ]
         
+        # Get counts for statistical testing
+        data_counts = [
+            no_connection_counts_ordered[i, j],
+            forward_only_counts_ordered[i, j],
+            reverse_only_counts_ordered[i, j],
+            symmetric_counts_ordered[i, j]
+        ]
+        total_pairs = total_pairs_counts_ordered[i, j]
+        
+        # Compute p-values and error bars for data
+        data_errors = []
+        p_values = []
+        
+        for k, (count, data_val, expected_prob) in enumerate(zip(data_counts, data_values, expected_values)):
+            if total_pairs > 0 and expected_prob > 0 and expected_prob < 1:
+                # Binomial test
+                result = binomtest(count, total_pairs, expected_prob, alternative='two-sided')
+                p_values.append(result.pvalue)
+                
+                # Standard error for proportion (for error bars)
+                if total_pairs > 1 and data_val > 0 and data_val < 1:
+                    se = np.sqrt(data_val * (1 - data_val) / total_pairs)
+                    # Use 1.96 * SE for approximate 95% CI
+                    data_errors.append(1.96 * se)
+                else:
+                    data_errors.append(0)
+            else:
+                p_values.append(1.0)
+                data_errors.append(0)
+        
         # Add small offset to avoid zero values for log scale
         epsilon = 1e-6
+        data_values_plot = [max(v, epsilon) for v in data_values]
         expected_values_plot = [max(v, epsilon) for v in expected_values]
-        null_values_plot = [max(v, epsilon) for v in null_values]
         
-        # Create grouped bars
-        bars1 = ax.bar(x - width/2, expected_values_plot, width, label='Expected', 
-                      color='#2ecc71', alpha=0.8, edgecolor='black', linewidth=1)
-        bars2 = ax.bar(x + width/2, null_values_plot, width, label='Null Hypothesis', 
+        # For log scale plots, error bars should be symmetric and in linear space
+        # matplotlib handles the log conversion
+        data_errors_plot = []
+        for val, err in zip(data_values, data_errors):
+            if val > epsilon:
+                # Cap error at the value itself to avoid negative bounds
+                data_errors_plot.append(min(err, val * 0.9))
+            else:
+                data_errors_plot.append(0)
+        
+        # Create grouped bars with more spacing
+        bars1 = ax.bar(x - width/2 - spacing/2, data_values_plot, width, label='Data', 
+                      color='#2ecc71', alpha=0.8, edgecolor='black', linewidth=1,
+                      yerr=data_errors_plot, capsize=5, error_kw={'elinewidth': 1.5, 'capthick': 1.5})
+        bars2 = ax.bar(x + width/2 + spacing/2, expected_values_plot, width, label='Expected', 
                       color='#e74c3c', alpha=0.8, edgecolor='black', linewidth=1)
         
         # Set log scale BEFORE adding labels (so labels are positioned correctly)
         ax.set_yscale('log')
         
-        # Add value labels on bars (using original linear values for annotations)
-        for bars, orig_values in [(bars1, expected_values), (bars2, null_values)]:
-            for bar, orig_val in zip(bars, orig_values):
+        # Add value labels and significance markers with more spacing
+        for k, (bars, orig_values, pval) in enumerate([(bars1, data_values, p_values), (bars2, expected_values, [1.0]*4)]):
+            for bar, orig_val, p in zip(bars, orig_values, pval):
                 if orig_val > 0.001:  # Only label if significant
                     height = bar.get_height()
-                    ax.text(bar.get_x() + bar.get_width()/2., height,
-                           f'{orig_val:.3f}',
-                           ha='center', va='bottom', fontsize=7)
+                    # Determine significance marker
+                    if k == 0:  # Only for data bars
+                        if p < 0.001:
+                            sig_marker = '***'
+                        elif p < 0.01:
+                            sig_marker = '**'
+                        elif p < 0.05:
+                            sig_marker = '*'
+                        else:
+                            sig_marker = ''
+                    else:
+                        sig_marker = ''
+                    
+                    # Position label higher above bar to avoid crowding
+                    label_y_offset = height * 1.15  # 15% above bar height
+                    label_text = f'{orig_val:.3f}{sig_marker}'
+                    ax.text(bar.get_x() + bar.get_width()/2., label_y_offset,
+                           label_text,
+                           ha='center', va='bottom', fontsize=8)
         
         # Customize plot
         ax.set_xlabel('Motif Type', fontsize=9)
@@ -281,11 +375,11 @@ for i, source_type in enumerate(ordered_cell_types):
         ax.set_title(f'{source_type} → {target_type}', fontsize=10, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels(motif_labels, fontsize=8, rotation=45, ha='right')
-        # Set reasonable y-limits for log scale
-        all_values = [v for v in expected_values + null_values if v > 0]
+        # Set reasonable y-limits for log scale with more room for labels
+        all_values = [v for v in data_values + expected_values if v > 0]
         if all_values:
             y_min = min(all_values) * 0.5
-            y_max = max(all_values) * 2
+            y_max = max(all_values) * 3.5  # More room above for labels and error bars
             ax.set_ylim([y_min, y_max])
         else:
             ax.set_ylim([1e-6, 1.0])
@@ -298,7 +392,7 @@ for i, source_type in enumerate(ordered_cell_types):
 for idx in range(pair_idx, len(axes)):
     axes[idx].axis('off')
 
-plt.suptitle('Pairwise Motif Analysis: Expected vs. Null Hypothesis\n(Both Known: Synapses Between Neurons in Dataset)', 
+plt.suptitle('Pairwise Motif Analysis: Data vs. Expected\n(Both Known: Synapses Between Neurons in Dataset)', 
              fontsize=16, fontweight='bold', y=0.995)
 plt.tight_layout(rect=[0, 0.02, 1, 0.98])
 plt.savefig(f'{figure_dir}/figure5_pairwise_motifs.png', dpi=300, bbox_inches='tight')
