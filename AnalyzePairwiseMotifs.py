@@ -201,8 +201,12 @@ else:
 
     # Save analysis data
     print("\n=== SAVING ANALYSIS DATA ===")
+    # Create cell_type_counts dict for ordered cell types
+    cell_type_counts_ordered_dict = {ct: cell_type_counts[ct] for ct in ordered_cell_types}
+    
     analysis_data = {
         'ordered_cell_types': ordered_cell_types,
+        'cell_type_counts': cell_type_counts_ordered_dict,
         'forward_only_fraction_ordered': forward_only_fraction_ordered,
         'reverse_only_fraction_ordered': reverse_only_fraction_ordered,
         'symmetric_fraction_ordered': symmetric_fraction_ordered,
@@ -230,6 +234,7 @@ with open(data_file, 'rb') as f:
     analysis_data = pickle.load(f)
 
 ordered_cell_types = analysis_data['ordered_cell_types']
+cell_type_counts = analysis_data['cell_type_counts']
 forward_only_fraction_ordered = analysis_data['forward_only_fraction_ordered']
 reverse_only_fraction_ordered = analysis_data['reverse_only_fraction_ordered']
 symmetric_fraction_ordered = analysis_data['symmetric_fraction_ordered']
@@ -265,8 +270,7 @@ axes = axes.flatten() if n_pairs > 1 else [axes] if n_rows == 1 else axes.flatte
 # Motif labels
 motif_labels = ['No Connection', 'Forward-Only\n(A→B)', 'Reverse-Only\n(B→A)', 'Symmetric\n(A↔B)']
 x = np.arange(len(motif_labels))
-width = 0.3  # Width of bars (slightly narrower for more space)
-spacing = 0.15  # Spacing between bar groups
+width = 0.35  # Width of bars
 
 pair_idx = 0
 for i, source_type in enumerate(ordered_cell_types):
@@ -308,45 +312,68 @@ for i, source_type in enumerate(ordered_cell_types):
                 result = binomtest(count, total_pairs, expected_prob, alternative='two-sided')
                 p_values.append(result.pvalue)
                 
-                # Standard error for proportion (for error bars)
-                if total_pairs > 1 and data_val > 0 and data_val < 1:
-                    se = np.sqrt(data_val * (1 - data_val) / total_pairs)
-                    # Use 1.96 * SE for approximate 95% CI
-                    data_errors.append(1.96 * se)
+                # Use Clopper-Pearson exact binomial confidence interval
+                # This is more appropriate for proportions, especially small ones
+                if total_pairs > 0 and count > 0 and count < total_pairs:
+                    from scipy.stats import beta
+                    alpha = 0.05
+                    lower = beta.ppf(alpha/2, count, total_pairs - count + 1)
+                    upper = beta.ppf(1 - alpha/2, count + 1, total_pairs - count)
+                    # Error is the distance from value to bounds
+                    err_lower = data_val - lower
+                    err_upper = upper - data_val
+                    # Cap errors to reasonable size (max 50% of value)
+                    err_lower = min(err_lower, data_val * 0.5)
+                    err_upper = min(err_upper, data_val * 0.5)
+                    data_errors.append((err_lower, err_upper))
+                elif count == 0:
+                    data_errors.append((0, 0))
+                elif count == total_pairs:
+                    data_errors.append((0, 0))
                 else:
-                    data_errors.append(0)
+                    data_errors.append((0, 0))
             else:
                 p_values.append(1.0)
-                data_errors.append(0)
+                data_errors.append((0, 0))
         
         # Add small offset to avoid zero values for log scale
         epsilon = 1e-6
         data_values_plot = [max(v, epsilon) for v in data_values]
         expected_values_plot = [max(v, epsilon) for v in expected_values]
         
-        # For log scale plots, error bars should be symmetric and in linear space
-        # matplotlib handles the log conversion
-        data_errors_plot = []
-        for val, err in zip(data_values, data_errors):
+        # For log scale plots, error bars need special handling
+        # matplotlib's yerr on log scale expects errors in log space
+        data_errors_lower_log = []
+        data_errors_upper_log = []
+        for val, (err_lower, err_upper) in zip(data_values, data_errors):
             if val > epsilon:
-                # Cap error at the value itself to avoid negative bounds
-                data_errors_plot.append(min(err, val * 0.9))
+                # Compute lower and upper bounds in linear space
+                lower_bound = max(val - err_lower, epsilon)
+                upper_bound = val + err_upper
+                # Convert to log space: error = log(upper) - log(value) for upper, log(value) - log(lower) for lower
+                val_log = np.log10(val)
+                lower_log = np.log10(lower_bound)
+                upper_log = np.log10(upper_bound)
+                data_errors_lower_log.append(val_log - lower_log)
+                data_errors_upper_log.append(upper_log - val_log)
             else:
-                data_errors_plot.append(0)
+                data_errors_lower_log.append(0)
+                data_errors_upper_log.append(0)
         
-        # Create grouped bars with more spacing
-        bars1 = ax.bar(x - width/2 - spacing/2, data_values_plot, width, label='Data', 
+        # Create grouped bars
+        bars1 = ax.bar(x - width/2, data_values_plot, width, label='Data', 
                       color='#2ecc71', alpha=0.8, edgecolor='black', linewidth=1,
-                      yerr=data_errors_plot, capsize=5, error_kw={'elinewidth': 1.5, 'capthick': 1.5})
-        bars2 = ax.bar(x + width/2 + spacing/2, expected_values_plot, width, label='Expected', 
+                      yerr=(data_errors_lower_log, data_errors_upper_log), capsize=5, 
+                      error_kw={'elinewidth': 1.5, 'capthick': 1.5})
+        bars2 = ax.bar(x + width/2, expected_values_plot, width, label='Expected', 
                       color='#e74c3c', alpha=0.8, edgecolor='black', linewidth=1)
         
         # Set log scale BEFORE adding labels (so labels are positioned correctly)
         ax.set_yscale('log')
         
-        # Add value labels and significance markers with more spacing
+        # Add value labels and significance markers
         for k, (bars, orig_values, pval) in enumerate([(bars1, data_values, p_values), (bars2, expected_values, [1.0]*4)]):
-            for bar, orig_val, p in zip(bars, orig_values, pval):
+            for bar_idx, (bar, orig_val, p) in enumerate(zip(bars, orig_values, pval)):
                 if orig_val > 0.001:  # Only label if significant
                     height = bar.get_height()
                     # Determine significance marker
@@ -362,17 +389,37 @@ for i, source_type in enumerate(ordered_cell_types):
                     else:
                         sig_marker = ''
                     
-                    # Position label higher above bar to avoid crowding
-                    label_y_offset = height * 1.15  # 15% above bar height
-                    label_text = f'{orig_val:.3f}{sig_marker}'
+                    # Position label with clearance above error bar
+                    # Get error bar height for this bar (in log space)
+                    if k == 0 and bar_idx < len(data_errors_upper_log):
+                        error_height_log = data_errors_upper_log[bar_idx]
+                        # Convert error height from log space to linear space for positioning
+                        # Position above error bar with clearance
+                        error_height_linear = height * (10**error_height_log - 1)
+                        label_y_offset = height + error_height_linear + (height * 0.05)  # 5% clearance above error
+                    else:
+                        label_y_offset = height * 1.1
+                    
+                    # Number label
                     ax.text(bar.get_x() + bar.get_width()/2., label_y_offset,
-                           label_text,
+                           f'{orig_val:.3f}',
                            ha='center', va='bottom', fontsize=8)
+                    
+                    # Asterisk below the number (only for data bars with significance)
+                    if k == 0 and sig_marker:
+                        asterisk_y_offset = label_y_offset * 0.95  # Slightly below the number
+                        ax.text(bar.get_x() + bar.get_width()/2., asterisk_y_offset,
+                               sig_marker,
+                               ha='center', va='top', fontsize=10, fontweight='bold')
         
         # Customize plot
         ax.set_xlabel('Motif Type', fontsize=9)
         ax.set_ylabel('Fraction (log scale)', fontsize=9)
-        ax.set_title(f'{source_type} → {target_type}', fontsize=10, fontweight='bold')
+        # Add N counts to title
+        source_count = cell_type_counts[source_type]
+        target_count = cell_type_counts[target_type]
+        ax.set_title(f'{source_type} ({source_count}) → {target_type} ({target_count})', 
+                    fontsize=10, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels(motif_labels, fontsize=8, rotation=45, ha='right')
         # Set reasonable y-limits for log scale with more room for labels
