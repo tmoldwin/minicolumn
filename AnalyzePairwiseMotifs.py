@@ -253,7 +253,7 @@ print(f"Loaded data for {len(ordered_cell_types)} cell types")
 
 print("\n=== CREATING GROUPED BAR CHARTS ===")
 # Create figure directory
-figure_dir = 'figures/both_known'
+figure_dir = 'figures/symmetric_connections'
 os.makedirs(figure_dir, exist_ok=True)
 
 sns.set_style("whitegrid")
@@ -362,9 +362,7 @@ for i, source_type in enumerate(ordered_cell_types):
         
         # Create grouped bars
         bars1 = ax.bar(x - width/2, data_values_plot, width, label='Data', 
-                      color='#2ecc71', alpha=0.8, edgecolor='black', linewidth=1,
-                      yerr=(data_errors_lower_log, data_errors_upper_log), capsize=5, 
-                      error_kw={'elinewidth': 1.5, 'capthick': 1.5})
+                      color='#2ecc71', alpha=0.8, edgecolor='black', linewidth=1)
         bars2 = ax.bar(x + width/2, expected_values_plot, width, label='Expected', 
                       color='#e74c3c', alpha=0.8, edgecolor='black', linewidth=1)
         
@@ -389,16 +387,8 @@ for i, source_type in enumerate(ordered_cell_types):
                     else:
                         sig_marker = ''
                     
-                    # Position label with clearance above error bar
-                    # Get error bar height for this bar (in log space)
-                    if k == 0 and bar_idx < len(data_errors_upper_log):
-                        error_height_log = data_errors_upper_log[bar_idx]
-                        # Convert error height from log space to linear space for positioning
-                        # Position above error bar with clearance
-                        error_height_linear = height * (10**error_height_log - 1)
-                        label_y_offset = height + error_height_linear + (height * 0.05)  # 5% clearance above error
-                    else:
-                        label_y_offset = height * 1.1
+                    # Position label above bar
+                    label_y_offset = height * 1.1
                     
                     # Number label
                     ax.text(bar.get_x() + bar.get_width()/2., label_y_offset,

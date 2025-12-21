@@ -1,0 +1,2318 @@
+{
+  "name": "connectome_based_network",
+  "description": "Network based on connectome connectivity data",
+  "num_stimuli": 20,
+  "num_epochs": 5,
+  "stim_duration": 250,
+  "break_time": 50,
+  "start_time": 100,
+  "base_weight_scale": 1.0,
+  "weight_scale_method": "sqrt_k",
+  "inhibitory_weight_scale": 25.0,
+  "input_amplitude_scale": 1.0,
+  "stimulus_distribution": "dirichlet",
+  "stimulus_alpha": 0.5,
+  "scale_factor": 1000.0,
+  "simulation_params": {
+    "tau_m_ms": 20.0,
+    "tau_syn_ms": 1.0,
+    "R_m_Mohm": 100.0,
+    "v_rest_mV": -65.0,
+    "v_thresh_mV": -55.0,
+    "v_reset_mV": -65.0,
+    "refractory_ms": 2.0
+  },
+  "input_layer": {
+    "n": 200,
+    "name": "Layer0"
+  },
+  "populations": [
+    {
+      "name": "23P",
+      "n": 349,
+      "type": "E"
+    },
+    {
+      "name": "4P",
+      "n": 266,
+      "type": "E"
+    },
+    {
+      "name": "5P-IT",
+      "n": 137,
+      "type": "E"
+    },
+    {
+      "name": "5P-PT",
+      "n": 38,
+      "type": "E"
+    },
+    {
+      "name": "5P-NP",
+      "n": 10,
+      "type": "E"
+    },
+    {
+      "name": "6P-IT",
+      "n": 192,
+      "type": "E"
+    },
+    {
+      "name": "6P-CT",
+      "n": 143,
+      "type": "E"
+    },
+    {
+      "name": "6P-U",
+      "n": 28,
+      "type": "E"
+    },
+    {
+      "name": "WM-P",
+      "n": 20,
+      "type": "E"
+    },
+    {
+      "name": "Unsure E",
+      "n": 5,
+      "type": "E"
+    },
+    {
+      "name": "BC",
+      "n": 59,
+      "type": "I"
+    },
+    {
+      "name": "MC",
+      "n": 41,
+      "type": "I"
+    },
+    {
+      "name": "BPC",
+      "n": 33,
+      "type": "I"
+    },
+    {
+      "name": "NGC",
+      "n": 17,
+      "type": "I"
+    },
+    {
+      "name": "Unsure I",
+      "n": 13,
+      "type": "I"
+    }
+  ],
+  "connections": [
+    {
+      "source": "23P",
+      "target": "23P",
+      "p": 0.04734380660672529,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.023542744333718557,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "4P",
+      "p": 0.028965680677338044,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.01689131163175457,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "5P-IT",
+      "p": 0.03436303934076507,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.04491047475113731,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "5P-PT",
+      "p": 0.0036193635952345045,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.06437537818356516,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "5P-NP",
+      "p": 0.011461318051575931,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.029689820195675065,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "6P-IT",
+      "p": 0.0032533428844317095,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.05845660922338852,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "6P-CT",
+      "p": 0.0011220870819724689,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.008531392624522571,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "6P-U",
+      "p": 0.003274662300450266,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.09422834133324631,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "WM-P",
+      "p": 0.0012893982808022922,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "Unsure E",
+      "p": 0.028080229226361032,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.008531392624522571,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "BC",
+      "p": 0.22611820698363364,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 1.018344155439537,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "MC",
+      "p": 0.37179397581941437,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.9819110914828049,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "BPC",
+      "p": 0.013371537726838587,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.014458125600176175,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "NGC",
+      "p": 0.09101634923310298,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.05886357714577001,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "23P",
+      "target": "Unsure I",
+      "p": 0.001763279700242451,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "23P",
+      "p": 0.012527737682314669,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.03856201752149313,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "4P",
+      "p": 0.04586466165413534,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.014237322208296072,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "5P-IT",
+      "p": 0.019729981889029143,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.04613483354265517,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "5P-PT",
+      "p": 0.002473288484368817,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "5P-NP",
+      "p": 0.002631578947368421,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.12631442828090617,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "6P-IT",
+      "p": 0.0033482142857142855,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.05717740366123891,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "6P-CT",
+      "p": 0.004364056995635943,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.06650379331839137,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "6P-U",
+      "p": 0.005639097744360902,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.008531392624522571,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "WM-P",
+      "p": 0.002255639097744361,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "Unsure E",
+      "p": 0.009774436090225564,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.018100843640673242,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "BC",
+      "p": 0.2321906461067924,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.881899727726219,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "MC",
+      "p": 0.2668256005868329,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 1.0350316892343945,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "BPC",
+      "p": 0.018796992481203006,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.010801541159061817,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "NGC",
+      "p": 0.04024767801857585,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.032285478632629816,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "4P",
+      "target": "Unsure I",
+      "p": 0.0014459224985540775,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "23P",
+      "p": 0.015456047518457323,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.011284766562942014,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "4P",
+      "p": 0.04286263103013007,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.07141301208879791,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "5P-IT",
+      "p": 0.03944826105624732,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.016786415359767215,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "5P-PT",
+      "p": 0.015751056473300037,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.009930670215212711,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "5P-NP",
+      "p": 0.027737226277372264,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.021603474191875444,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "6P-IT",
+      "p": 0.006767031630170317,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.059759478131599056,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "6P-CT",
+      "p": 0.007758664692971262,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.055130320039514,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "6P-U",
+      "p": 0.006517205422314911,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.08577928684671868,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "Unsure E",
+      "p": 0.030656934306569343,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.008531392624522571,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "BC",
+      "p": 0.21959668439935667,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7586511325088395,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "MC",
+      "p": 0.21880007121239095,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7115463252428166,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "BPC",
+      "p": 0.030966600309666,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.17510459245033816,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "NGC",
+      "p": 0.042936882782310004,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.03882230375894759,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-IT",
+      "target": "Unsure I",
+      "p": 0.02582818641212802,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.0717102942460543,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "23P",
+      "p": 0.11581963504750414,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.1944002527225654,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "4P",
+      "p": 0.08260783537791848,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.08875833021751903,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "5P-IT",
+      "p": 0.09124087591240876,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.09011137961694549,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "5P-PT",
+      "p": 0.05689900426742532,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.08818602687728361,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "5P-NP",
+      "p": 0.09736842105263158,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.11422968906583406,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "6P-IT",
+      "p": 0.020148026315789474,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.03206189003471671,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "6P-CT",
+      "p": 0.021899153478100848,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.04431108874985734,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "6P-U",
+      "p": 0.02631578947368421,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.0899086801887298,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "WM-P",
+      "p": 0.003947368421052632,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "Unsure E",
+      "p": 0.05263157894736842,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "BC",
+      "p": 0.32515611061552185,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 1.2037727731339491,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "MC",
+      "p": 0.3793324775353017,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 1.0620796460008977,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "BPC",
+      "p": 0.07256778309409888,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7207267681551625,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "NGC",
+      "p": 0.16718266253869968,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.24272478012531734,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-PT",
+      "target": "Unsure I",
+      "p": 0.044534412955465584,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.042054084663166236,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "23P",
+      "p": 0.0040114613180515755,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "4P",
+      "p": 0.0033834586466165413,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "5P-IT",
+      "p": 0.010218978102189781,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "5P-PT",
+      "p": 0.04473684210526316,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.26066248081198473,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "5P-NP",
+      "p": 0.011111111111111112,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "6P-IT",
+      "p": 0.009895833333333333,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.07370670561244952,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "6P-CT",
+      "p": 0.033566433566433566,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.02590909735576903,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "6P-U",
+      "p": 0.02142857142857143,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.029150679827258358,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "WM-P",
+      "p": 0.005,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "BC",
+      "p": 0.04067796610169491,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.16268207245178085,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "MC",
+      "p": 0.1073170731707317,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.20168423025505017,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "BPC",
+      "p": 0.00909090909090909,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3858256237659907,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "NGC",
+      "p": 0.023529411764705882,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "5P-NP",
+      "target": "Unsure I",
+      "p": 0.2153846153846154,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 1.167768303109067,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "23P",
+      "p": 0.0051486389684813755,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.08244038558120409,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "4P",
+      "p": 0.008634868421052632,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.04025877154490928,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "5P-IT",
+      "p": 0.013800182481751825,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.06356546480001984,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "5P-PT",
+      "p": 0.013020833333333334,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.0637563747592814,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "5P-NP",
+      "p": 0.046875,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.019581228811107493,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "6P-IT",
+      "p": 0.022142233856893543,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.03665535785209849,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "6P-CT",
+      "p": 0.012092074592074592,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.05801717944107278,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "6P-U",
+      "p": 0.017857142857142856,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.054619203238200395,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "WM-P",
+      "p": 0.016927083333333332,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.008927828747245972,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "Unsure E",
+      "p": 0.015625,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.00016314295400599033,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "BC",
+      "p": 0.09110169491525423,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7276820108965504,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "MC",
+      "p": 0.05932418699186992,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2854490984891451,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "BPC",
+      "p": 0.02004419191919192,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2012969085795605,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "NGC",
+      "p": 0.02696078431372549,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.15125337662815813,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-IT",
+      "target": "Unsure I",
+      "p": 0.12980769230769232,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.49617368093485603,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "23P",
+      "p": 0.0064119261826998215,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.08818602687728361,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "4P",
+      "p": 0.01372311898627688,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.03352859650284089,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "5P-IT",
+      "p": 0.02460313409218519,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.028182092808661394,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "5P-PT",
+      "p": 0.02576370997423629,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.04276190176302799,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "5P-NP",
+      "p": 0.07902097902097902,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.030414103874030318,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "6P-IT",
+      "p": 0.023492132867132868,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.0633726890698872,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "6P-CT",
+      "p": 0.01955087166354772,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.05449693441781993,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "6P-U",
+      "p": 0.033466533466533464,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.007598121441524164,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "WM-P",
+      "p": 0.006993006993006993,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.07620983583056795,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "Unsure E",
+      "p": 0.016783216783216783,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "BC",
+      "p": 0.08759037572596895,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5789144447445609,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "MC",
+      "p": 0.07675251577690602,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.49198581959438126,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "BPC",
+      "p": 0.043441407077770715,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2949932086710742,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "NGC",
+      "p": 0.024681201151789386,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.014761942375158627,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-CT",
+      "target": "Unsure I",
+      "p": 0.14254975793437333,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.4155675929647282,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "23P",
+      "p": 0.005321326238231682,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.001293725324292061,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "4P",
+      "p": 0.009129967776584319,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.027019591639796184,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "5P-IT",
+      "p": 0.022419186652763295,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.09071092652136784,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "5P-PT",
+      "p": 0.017857142857142856,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.024916541443017373,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "5P-NP",
+      "p": 0.07142857142857142,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.014761942375158627,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "6P-IT",
+      "p": 0.022321428571428572,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.029689820195675065,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "6P-CT",
+      "p": 0.015734265734265736,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.008531392624522571,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "6P-U",
+      "p": 0.0291005291005291,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.042054084663166236,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "WM-P",
+      "p": 0.014285714285714285,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "Unsure E",
+      "p": 0.007142857142857143,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "BC",
+      "p": 0.09261501210653753,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7110301355408613,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "MC",
+      "p": 0.08710801393728224,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2737761199573678,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "BPC",
+      "p": 0.022727272727272728,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5681471805599453,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "NGC",
+      "p": 0.025210084033613446,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.09814355131420976,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "6P-U",
+      "target": "Unsure I",
+      "p": 0.17032967032967034,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5353573577369545,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "23P",
+      "p": 0.002148997134670487,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.00016314295400599033,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "4P",
+      "p": 0.0020676691729323306,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "5P-IT",
+      "p": 0.00583941605839416,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "5P-PT",
+      "p": 0.005263157894736842,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "5P-NP",
+      "p": 0.005,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "6P-IT",
+      "p": 0.022395833333333334,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.09071092652136784,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "6P-CT",
+      "p": 0.008741258741258742,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "6P-U",
+      "p": 0.017857142857142856,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "WM-P",
+      "p": 0.05263157894736842,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.17510459245033816,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "Unsure E",
+      "p": 0.01,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "BC",
+      "p": 0.006779661016949152,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.1934537311185346,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "MC",
+      "p": 0.015853658536585366,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.20042240043462795,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "BPC",
+      "p": 0.012121212121212121,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.1934537311185346,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "NGC",
+      "p": 0.011764705882352941,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.09814355131420976,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "WM-P",
+      "target": "Unsure I",
+      "p": 0.1,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3304755286828257,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "23P",
+      "p": 0.0057306590257879654,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "4P",
+      "p": 0.032330827067669175,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.04562551703076345,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "5P-IT",
+      "p": 0.010218978102189781,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "5P-PT",
+      "p": 0.005263157894736842,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "5P-NP",
+      "p": 0.02,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "6P-IT",
+      "p": 0.004166666666666667,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "6P-CT",
+      "p": 0.008391608391608392,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.029150679827258358,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "6P-U",
+      "p": 0.007142857142857143,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "BC",
+      "p": 0.20677966101694914,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.8639925636508872,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "MC",
+      "p": 0.17560975609756097,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.8347758438138939,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "BPC",
+      "p": 0.024242424242424242,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.09814355131420976,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "NGC",
+      "p": 0.03529411764705882,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3858256237659907,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure E",
+      "target": "Unsure I",
+      "p": 0.03076923076923077,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7912907318741551,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "23P",
+      "p": 0.12626875819532807,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.4778436771773479,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "4P",
+      "p": 0.16050720020389958,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.4008765363059523,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "5P-IT",
+      "p": 0.13200544352344426,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.32775163572539806,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "5P-PT",
+      "p": 0.05753791257805531,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.77092980922524,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "5P-NP",
+      "p": 0.05423728813559322,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2804651081081644,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "6P-IT",
+      "p": 0.06523658192090395,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5252933533054632,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "6P-CT",
+      "p": 0.01813440796491644,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.16757205774597267,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "6P-U",
+      "p": 0.05811138014527845,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.44055052345523726,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "WM-P",
+      "p": 0.009322033898305085,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3103180712578455,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "Unsure E",
+      "p": 0.1423728813559322,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3568380868927384,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "BC",
+      "p": 0.24079485680888368,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.9896639976786177,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "MC",
+      "p": 0.21124431583298883,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.9794659639195704,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "BPC",
+      "p": 0.17616846430405753,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7789702474861144,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "NGC",
+      "p": 0.053838484546360914,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.20350406697203605,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BC",
+      "target": "Unsure I",
+      "p": 0.04432855280312908,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5533320947748047,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "23P",
+      "p": 0.18624641833810887,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5048336748882601,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "4P",
+      "p": 0.13781404731340546,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.4740338889894665,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "5P-IT",
+      "p": 0.11963681680612427,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.31747030410171867,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "5P-PT",
+      "p": 0.09370988446726572,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.8183194042620743,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "5P-NP",
+      "p": 0.07804878048780488,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.32128710262841953,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "6P-IT",
+      "p": 0.041539634146341466,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.1464967480307635,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "6P-CT",
+      "p": 0.08016373870032406,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5290966656880721,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "6P-U",
+      "p": 0.07491289198606271,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.47689850909480025,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "WM-P",
+      "p": 0.01097560975609756,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3858256237659907,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "Unsure E",
+      "p": 0.0975609756097561,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2114722366212129,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "BC",
+      "p": 0.12691194708557255,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.6002012068500288,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "MC",
+      "p": 0.10426829268292682,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3501075411639114,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "BPC",
+      "p": 0.23725055432372505,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 1.1605958585678755,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "NGC",
+      "p": 0.024390243902439025,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.06784158616005137,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "MC",
+      "target": "Unsure I",
+      "p": 0.0150093808630394,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "23P",
+      "p": 0.050968134062689935,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.052483067206493594,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "4P",
+      "p": 0.03884711779448621,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.03262667986898493,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "5P-IT",
+      "p": 0.039593010395930106,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.024118775146219712,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "5P-PT",
+      "p": 0.013556618819776715,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "5P-NP",
+      "p": 0.01818181818181818,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.029150679827258358,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "6P-IT",
+      "p": 0.008207070707070708,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.015800708035007993,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "6P-CT",
+      "p": 0.004873913964823055,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.041618391060949,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "6P-U",
+      "p": 0.007575757575757576,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "WM-P",
+      "p": 0.007575757575757576,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.05732155679395459,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "Unsure E",
+      "p": 0.048484848484848485,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.007216964343616544,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "BC",
+      "p": 0.0903954802259887,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.49447617585910164,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "MC",
+      "p": 0.22099039172209903,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 1.005430661255493,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "BPC",
+      "p": 0.12121212121212122,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.32128710262841953,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "NGC",
+      "p": 0.0784313725490196,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.36747648509779424,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "BPC",
+      "target": "Unsure I",
+      "p": 0.06993006993006994,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7642620594862357,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "23P",
+      "p": 0.041463003539524694,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.06676195057304168,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "4P",
+      "p": 0.033171163202122954,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.1166381339503742,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "5P-IT",
+      "p": 0.04164877629884071,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.11247337686903464,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "5P-PT",
+      "p": 0.007739938080495356,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "5P-NP",
+      "p": 0.0058823529411764705,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "6P-IT",
+      "p": 0.01991421568627451,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2649609215721992,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "6P-CT",
+      "p": 0.0020567667626491155,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.34500362924573563,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "6P-U",
+      "p": 0.014705882352941176,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.4940392084062235,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "WM-P",
+      "p": 0.0029411764705882353,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "Unsure E",
+      "p": 0.03529411764705882,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "BC",
+      "p": 0.020937188434695914,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.008531392624522571,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "MC",
+      "p": 0.1649928263988522,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7648574748059996,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "BPC",
+      "p": 0.0570409982174688,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2804651081081644,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "NGC",
+      "p": 0.17279411764705882,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.3555857385762724,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "NGC",
+      "target": "Unsure I",
+      "p": 0.00904977375565611,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.9736122886681098,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "23P",
+      "p": 0.003967379325545515,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.029150679827258358,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "4P",
+      "p": 0.0031810294968189707,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "5P-IT",
+      "p": 0.015721504772599662,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.09814355131420976,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "5P-PT",
+      "p": 0.016194331983805668,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.09814355131420976,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "5P-NP",
+      "p": 0.2153846153846154,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.6371400520468967,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "6P-IT",
+      "p": 0.10096153846153846,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.45481849525294216,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "6P-CT",
+      "p": 0.09682625067240452,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.7823621011298537,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "6P-U",
+      "p": 0.1043956043956044,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.5140799592896695,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "WM-P",
+      "p": 0.08461538461538462,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.2496934494414107,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "Unsure E",
+      "p": 0.03076923076923077,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.125,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "BC",
+      "p": 0.0560625814863103,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.6781480757742738,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "MC",
+      "p": 0.02626641651031895,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.4139965007326869,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "BPC",
+      "p": 0.04895104895104895,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.19777339226305102,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "NGC",
+      "p": 0.013574660633484163,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": 0.16268207245178085,
+        "sigma": 0.5
+      }
+    },
+    {
+      "source": "Unsure I",
+      "target": "Unsure I",
+      "p": 0.07051282051282051,
+      "weight_dist": {
+        "dist": "lognormal",
+        "mu": -0.037988623010370315,
+        "sigma": 0.5
+      }
+    }
+  ]
+}
