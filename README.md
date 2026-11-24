@@ -16,7 +16,7 @@ This was joint work with Dean Geckt in the Idan Segev lab. Dean's MICrONS analys
   - `pre_known`: outputs of column cells to any target.
 - **Pairwise and reciprocal motifs.** Counts of each connection pattern between two cells (one-way either direction, reciprocal, or none), compared with what independent connections would predict. Significance comes from binomial tests with Clopper–Pearson confidence intervals (`AnalyzePairwiseMotifs.py`, `AnalyzeSymmetricConnections.py`).
 - **E/I summary.** The same analyses pooled into E→E, E→I, I→E and I→I (`AnalyzeEI_Aggregate.py`).
-- **Export to a network model.** `ExportConnectomeToSSRNN.py` writes the measured cell-type populations and connection probabilities to a JSON config (`connectome_ssrnn_config.json`, `connectome_ssrnn_stats.json`) that a spiking recurrent network simulator reads.
+- **Export to a network model.** `ExportConnectomeToSSRNN.py` writes the measured cell-type populations and connection probabilities to a JSON config (`connectome_ssrnn_config.json`, `connectome_ssrnn_stats.json`) that the spiking recurrent network model in [SSBrian](https://github.com/tmoldwin/SSBrian) reads.
 
 ## Figures
 
